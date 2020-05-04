@@ -1,0 +1,24 @@
+<mat-accordion [multi]="true">
+  <mat-expansion-panel *ngFor="let group of groups" [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title><i [class]="stateClasses[group.state]"></i> {{group.name}}</mat-panel-title>
+      <!--      <mat-panel-description>-->
+      <!--        <span class="text-capitalize">{{getGroupState(group.services)}}</span>-->
+      <!--      </mat-panel-description>-->
+    </mat-expansion-panel-header>
+
+    <mat-list>
+      <a *ngFor="let service of group.services; last as last" mat-list-item [href]="service.url" target="_blank">
+        <div matLine class="d-flex">
+          <i [class]="stateClasses[service.state]"></i>
+          <span>{{service.name}}</span>
+          <span class="flex-grow-1"></span>
+          <span class="text-capitalize {{service.state}}">{{service.state}}</span>
+        </div>
+        <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
+      </a>
+    </mat-list>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<div class="text-right mt-3"><small>Last updated {{lastUpdated | date:'HH:mm:ss'}}</small></div>

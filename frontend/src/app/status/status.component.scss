@@ -1,0 +1,22 @@
+.operational {
+  color: #7ed321;
+}
+
+.outage {
+  color: #ff6f6f;
+}
+
+.maintenance {
+  color: #f7ca18;
+}
+
+a {
+  text-decoration: none;
+  outline: none;
+}
+
+mat-panel-title {
+  .fa, .fas, .far, .fal, .fad, .fab {
+    line-height: inherit;
+  }
+}
