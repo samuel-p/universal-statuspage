@@ -1,10 +1,11 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, PLATFORM_ID} from '@angular/core';
 import {ApiService} from "../_service/api.service";
 import {Group} from "../_data/data";
 import {interval, Subject} from "rxjs";
 import {flatMap, startWith, takeUntil} from "rxjs/operators";
-import {Meta} from "@angular/platform-browser";
-import {DOCUMENT} from "@angular/common";
+import {DOCUMENT, isPlatformBrowser} from "@angular/common";
+
+// import {DOCUMENT} from "@angular/common";
 
 @Component({
   selector: 'app-status',
@@ -22,17 +23,23 @@ export class StatusComponent implements OnInit, OnDestroy {
   groups: Group[];
   lastUpdated: Date;
 
-  constructor(private api: ApiService, @Inject(DOCUMENT) private document: Document) {
+  constructor(private api: ApiService, @Inject(PLATFORM_ID) private platformId: Object,
+              @Inject(DOCUMENT) private document: Document) {
   }
 
   ngOnInit(): void {
-    interval(30000).pipe(
-      startWith(0),
-      takeUntil(this.destroyed$),
-      flatMap(() => this.api.getServiceStates())
-    ).subscribe(response => {
-      const favicon: HTMLLinkElement = document.getElementById('favicon') as HTMLLinkElement;
-      favicon.href = `favicon-${response.state}.ico`;
+    this.update();
+    if (isPlatformBrowser(this.platformId)) {
+      interval(30000).pipe(takeUntil(this.destroyed$)).subscribe(() => this.update());
+    }
+  }
+
+  private update() {
+    this.api.getServiceStates().subscribe(response => {
+      if (isPlatformBrowser(this.platformId)) {
+        const favicon: HTMLLinkElement = document.getElementById('favicon') as HTMLLinkElement;
+        favicon.href = `favicon-${response.state}.ico`;
+      }
       this.groups = response.groups;
       this.lastUpdated = new Date();
     });

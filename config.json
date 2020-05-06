@@ -1,0 +1,18 @@
+{
+  "authToken": "test",
+  "title": "sp-status",
+  "description": "Services hosted by sp-codes",
+  "groups": [
+    {
+      "id": "test",
+      "name": "Test",
+      "services": [
+        {
+          "id": "test",
+          "name": "Test",
+          "url": "http://test.de"
+        }
+      ]
+    }
+  ]
+}

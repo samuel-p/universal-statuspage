@@ -1,7 +1,7 @@
 <div class="box">
   <header class="container pt-4">
-    <h1>sp-status</h1>
-    <h3>Services hosted by sp-codes</h3>
+    <h1 *ngIf="title && title.length">{{title}}</h1>
+    <h3 *ngIf="description && description.length">{{description}}</h3>
   </header>
 
   <main class="container">

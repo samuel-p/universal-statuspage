@@ -1,6 +1,6 @@
-export type State = 'operational' | 'outage' | 'maintenance';   // ok, alerting, paused
+export type State = 'operational' | 'outage' | 'maintenance';
 
-export interface ApiResponse {
+export interface CurrentStatus {
   state: State;
   groups: Group[];
 }
@@ -17,4 +17,9 @@ export interface Service {
   name: string;
   url: string;
   state: State;
+}
+
+export interface MetaInfo {
+  title: string;
+  description: string;
 }

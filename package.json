@@ -1,13 +1,17 @@
 {
-  "name": "sp-status",
-  "version": "0.0.1",
+  "name": "grafana-statuspage",
+  "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "dev:ssr": "ng run grafana-statuspage:serve-ssr",
+    "serve:ssr": "node dist/grafana-statuspage/server/main.js",
+    "build:ssr": "ng build --prod && ng run grafana-statuspage:server:production",
+    "prerender": "ng run grafana-statuspage:prerender"
   },
   "private": true,
   "dependencies": {
@@ -20,9 +24,12 @@
     "@angular/material": "^9.2.2",
     "@angular/platform-browser": "~9.1.4",
     "@angular/platform-browser-dynamic": "~9.1.4",
+    "@angular/platform-server": "~9.1.4",
     "@angular/router": "~9.1.4",
     "@fortawesome/fontawesome-free": "^5.13.0",
+    "@nguniversal/express-engine": "^9.1.0",
     "bootstrap": "^4.4.1",
+    "express": "^4.15.2",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
@@ -32,6 +39,8 @@
     "@angular/cli": "~9.1.4",
     "@angular/compiler-cli": "~9.1.4",
     "@angular/language-service": "~9.1.4",
+    "@nguniversal/builders": "^9.1.0",
+    "@types/express": "^4.17.0",
     "@types/node": "^12.11.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
