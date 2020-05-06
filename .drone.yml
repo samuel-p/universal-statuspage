@@ -1,0 +1,18 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build
+    image: node
+    commands:
+      - npm install
+      - npm run build:ssr
+
+  - name: docker
+    image: plugins/docker
+    settings:
+      repo: samuelph/grafana-statuspage
+      username:
+        from_secret: USERNAME
+      password:
+        from_secret: PASSWORD

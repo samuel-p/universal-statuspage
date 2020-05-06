@@ -8,11 +8,12 @@ import {AppServerModule} from './src/main.server';
 import {APP_BASE_HREF} from '@angular/common';
 import {existsSync} from 'fs';
 import {api} from './src/main.status';
+import {environment} from "./src/environments/environment";
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app() {
   const server = express();
-  const distFolder = join(process.cwd(), 'dist/grafana-statuspage/browser');
+  const distFolder = environment.production ? '/grafana-statuspage/browser' : join(process.cwd(), 'dist/grafana-statuspage/browser');
   const indexHtml = existsSync(join(distFolder, 'index.original.html')) ? 'index.original.html' : 'index';
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
