@@ -1,27 +1,15 @@
-# GrafanaStatuspage
+# [universal-statuspage](https://git.sp-codes.de/samuel-p/universal-statuspage)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.4.
+[![Build Status](https://ci.sp-codes.de/api/badges/samuel-p/universal-statuspage/status.svg)](https://ci.sp-codes.de/samuel-p/universal-statuspage) [![License](https://img.shields.io/badge/license-GPL--3.0-orange)](#license) [![Docker Pulls](https://img.shields.io/docker/pulls/samuelph/universal-statuspage)](https://hub.docker.com/r/samuelph/universal-statuspage)
 
-## Development server
+A simple, universal public Statuspage. [Demo](https://status.sp-codes.de)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Usage
 
-## Code scaffolding
+_tbd_
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## License
 
-## Build
+[![GNU GPLv3 Image](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+universal-statuspage is Free Software: It is licensed under GNU GPL v3 (See [LICENSE](LICENSE) for more information).

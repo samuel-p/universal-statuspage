@@ -2,6 +2,11 @@
   "authToken": "test",
   "title": "sp-status",
   "description": "Services hosted by sp-codes",
+  "statePath": "$.status",
+  "stateValues": {
+    "operational": ["OK"],
+    "maintenance": ["PAUSED"]
+  },
   "groups": [
     {
       "id": "test",
@@ -9,8 +14,13 @@
       "services": [
         {
           "id": "test",
-          "name": "Test",
-          "url": "http://test.de"
+          "name": "test",
+          "url": "http://sp-codes.de",
+          "statePath": "$.state",
+          "stateValues": {
+            "operational": ["ok"],
+            "maintenance": ["paused"]
+          }
         }
       ]
     }

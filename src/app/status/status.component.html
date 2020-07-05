@@ -11,7 +11,7 @@
       <a *ngFor="let service of group.services; last as last" mat-list-item [href]="service.url" target="_blank">
         <div matLine class="d-flex">
           <i [class]="stateClasses[service.state]"></i>
-          <span>{{service.name}}</span>
+          <span class="text-truncate">{{service.name}}</span>
           <span class="flex-grow-1"></span>
           <span class="text-capitalize {{service.state}}">{{service.state}}</span>
         </div>

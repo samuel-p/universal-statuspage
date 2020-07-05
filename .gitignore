@@ -47,6 +47,5 @@ testem.log
 Thumbs.db
 
 # custom
-
 config.json
 cache.json
