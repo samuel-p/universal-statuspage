@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "grafana-statuspage": {
+    "universal-statuspage": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/grafana-statuspage/browser",
+            "outputPath": "dist/universal-statuspage/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -69,18 +69,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "grafana-statuspage:build"
+            "browserTarget": "universal-statuspage:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "grafana-statuspage:build:production"
+              "browserTarget": "universal-statuspage:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "grafana-statuspage:build"
+            "browserTarget": "universal-statuspage:build"
           }
         },
         "test": {
@@ -120,18 +120,18 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "grafana-statuspage:serve"
+            "devServerTarget": "universal-statuspage:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "grafana-statuspage:serve:production"
+              "devServerTarget": "universal-statuspage:serve:production"
             }
           }
         },
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "dist/grafana-statuspage/server",
+            "outputPath": "dist/universal-statuspage/server",
             "main": "server.ts",
             "tsConfig": "tsconfig.server.json"
           },
@@ -152,21 +152,21 @@
         "serve-ssr": {
           "builder": "@nguniversal/builders:ssr-dev-server",
           "options": {
-            "browserTarget": "grafana-statuspage:build",
-            "serverTarget": "grafana-statuspage:server"
+            "browserTarget": "universal-statuspage:build",
+            "serverTarget": "universal-statuspage:server"
           },
           "configurations": {
             "production": {
-              "browserTarget": "grafana-statuspage:build:production",
-              "serverTarget": "grafana-statuspage:server:production"
+              "browserTarget": "universal-statuspage:build:production",
+              "serverTarget": "universal-statuspage:server:production"
             }
           }
         },
         "prerender": {
           "builder": "@nguniversal/builders:prerender",
           "options": {
-            "browserTarget": "grafana-statuspage:build:production",
-            "serverTarget": "grafana-statuspage:server:production",
+            "browserTarget": "universal-statuspage:build:production",
+            "serverTarget": "universal-statuspage:server:production",
             "routes": [
               "/"
             ]
@@ -177,5 +177,5 @@
         }
       }
     }},
-  "defaultProject": "grafana-statuspage"
+  "defaultProject": "universal-statuspage"
 }

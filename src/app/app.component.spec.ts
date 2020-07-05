@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'grafana-statuspage'`, () => {
+  it(`should have as title 'universal-statuspage'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('grafana-statuspage');
+    expect(app.title).toEqual('universal-statuspage');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('grafana-statuspage app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('universal-statuspage app is running!');
   });
 });

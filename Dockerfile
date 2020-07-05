@@ -1,9 +1,9 @@
 FROM node:alpine
 
-COPY dist/grafana-statuspage /grafana-statuspage
+COPY dist/universal-statuspage /universal-statuspage
 
 WORKDIR /app
 
 EXPOSE 4000
 
-ENTRYPOINT ["node", "/grafana-statuspage/server/main.js"]
+ENTRYPOINT ["node", "/universal-statuspage/server/main.js"]
