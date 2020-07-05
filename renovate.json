@@ -1,0 +1,35 @@
+{
+  "assignees": [
+    "samuel-p"
+  ],
+  "baseBranches": [
+    "develop"
+  ],
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "managers": [
+        "npm"
+      ],
+      "packageNames": [
+        "@types/node",
+        "@types/jasmine",
+        "@types/jasminewd2",
+        "codelyzer",
+        "protractor",
+        "rxjs",
+        "ts-node",
+        "tslib",
+        "tslint",
+        "typescript",
+        "zone.js"
+      ],
+      "packagePatterns": [
+        "^angular",
+        "^karma",
+        "^jasmine"
+      ],
+      "enabled": false
+    }
+  ]
+}

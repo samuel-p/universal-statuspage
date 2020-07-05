@@ -1,15 +1,21 @@
 import {json, Router} from 'express';
-import {CurrentStatus, State} from "./app/_data/data";
-import {existsSync, readFileSync, writeFileSync} from "fs";
+import {CurrentStatus, State} from './app/_data/data';
+import {existsSync, readFileSync, writeFileSync} from 'fs';
+import * as jp from 'jsonpath';
 
 interface Cache {
-  [id: string]: State
+  [id: string]: State;
 }
 
 interface Config {
   authToken: string;
   title: string;
   description: string;
+  statePath: string;
+  stateValues: {
+    operational: string[];
+    maintenance: string[];
+  };
   groups: {
     id: string;
     name: string;
@@ -17,34 +23,40 @@ interface Config {
       id: string;
       name: string;
       url: string;
+      statePath?: string;
+      stateValues?: {
+        operational?: string[];
+        maintenance?: string[];
+      };
     }[];
   }[];
 }
 
-interface GrafanaWebhookBody {
-  dashboardId: number;
-  evalMatches: {
-    value: number,
-    metric: string,
-    tags: any
-  }[];
-  imageUrl: string,
-  message: string,
-  orgId: number,
-  panelId: number,
-  ruleId: number,
-  ruleName: string,
-  ruleUrl: string,
-  state: "ok" | "paused" | "alerting" | "pending" | "no_data";
-  tags: { [key: string]: string },
-  title: string
+interface StateKey {
+  statePath: string;
+  stateValues: {
+    operational: string[];
+    maintenance: string[];
+  };
 }
 
 const api = Router();
 api.use(json());
 
-const config = JSON.parse(readFileSync('config.json', {encoding: 'UTF-8'})) as Config;
-const serviceStates = existsSync('cache.json') ? JSON.parse(readFileSync('cache.json', {encoding: 'UTF-8'})) : {} as Cache;
+const config = JSON.parse(readFileSync('config.json', {encoding: 'utf-8'})) as Config;
+const stateKeys: { [service: string]: StateKey } = config.groups
+  .map(g => g.services).reduce((x, y) => x.concat(y), [])
+  .reduce((services, service) => {
+    services[service.id] = {
+      statePath: service.statePath || config.statePath,
+      stateValues: {
+        operational: service.stateValues ? service.stateValues.operational || config.stateValues.operational : config.stateValues.operational,
+        maintenance: service.stateValues ? service.stateValues.maintenance || config.stateValues.maintenance : config.stateValues.maintenance,
+      }
+    };
+    return services;
+  }, {});
+const serviceStates = existsSync('cache.json') ? JSON.parse(readFileSync('cache.json', {encoding: 'utf-8'})) : {} as Cache;
 
 let cache: CurrentStatus;
 updateCache();
@@ -55,23 +67,20 @@ api.post('/update/health', (req, res) => {
     return res.status(401).send('invalid token');
   }
   const serviceId = req.query.service as string;
-  const message = req.body as GrafanaWebhookBody;
+  const keys = stateKeys[serviceId];
+  const state = jp.value(req.body, keys.statePath);
 
-  switch (message.state) {
-    case "no_data":
-    case "alerting":
-      serviceStates[serviceId] = "outage";
-      break;
-    case "paused":
-      serviceStates[serviceId] = "maintenance";
-      break;
-    default:
-      serviceStates[serviceId] = "operational"
+  if (keys.stateValues.operational.includes(state)) {
+    serviceStates[serviceId] = 'operational';
+  } else if (keys.stateValues.maintenance.includes(state)) {
+    serviceStates[serviceId] = 'maintenance';
+  } else {
+    serviceStates[serviceId] = 'outage';
   }
 
   updateCache();
 
-  writeFileSync('cache.json', JSON.stringify(serviceStates), {encoding: 'UTF-8'});
+  writeFileSync('cache.json', JSON.stringify(serviceStates), {encoding: 'utf-8'});
 
   return res.send('OK');
 });
@@ -94,15 +103,15 @@ function updateCache(): void {
         id: service.id,
         name: service.name,
         url: service.url,
-        state: serviceStates[service.id] || "operational"
-      }
+        state: serviceStates[service.id] || 'operational'
+      };
     });
     return {
       id: group.id,
       name: group.name,
       state: calculateOverallState(services.map(s => s.state)),
       services: services
-    }
+    };
   });
   cache = {
     state: calculateOverallState(groups.map(g => g.state)),
@@ -111,7 +120,7 @@ function updateCache(): void {
 }
 
 function calculateOverallState(states: State[]): State {
-  return states.includes("outage") ? "outage" : states.includes("maintenance") ? "maintenance" : "operational"
+  return states.includes('outage') ? 'outage' : states.includes('maintenance') ? 'maintenance' : 'operational';
 }
 
 export {api};

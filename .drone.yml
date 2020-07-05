@@ -1,18 +1,92 @@
 kind: pipeline
-name: default
+type: docker
+name: linux-amd64
+
+platform:
+  os: linux
+  arch: amd64
 
 steps:
   - name: build
-    image: node
+    image: node:alpine
     commands:
       - npm install
       - npm run build:ssr
-
   - name: docker
     image: plugins/docker
     settings:
-      repo: samuelph/grafana-statuspage
+      auto_tag: true
+      auto_tag_suffix: linux-amd64
+      repo: samuelph/universal-statuspage
       username:
         from_secret: USERNAME
       password:
         from_secret: PASSWORD
+
+trigger:
+  branch:
+    - master
+
+---
+kind: pipeline
+type: docker
+name: linux-arm
+
+platform:
+  os: linux
+  arch: arm
+
+steps:
+  - name: build
+    image: node:alpine
+    commands:
+      - npm install
+      - npm run build:ssr
+  - name: docker
+    image: plugins/docker
+    settings:
+      auto_tag: true
+      auto_tag_suffix: linux-arm
+      repo: samuelph/universal-statuspage
+      username:
+        from_secret: USERNAME
+      password:
+        from_secret: PASSWORD
+    when:
+      branch:
+        - master
+      event:
+        - push
+
+---
+kind: pipeline
+type: docker
+name: manifest
+
+platform:
+  os: linux
+  arch: arm
+
+steps:
+  - name: publish
+    image: plugins/manifest
+    settings:
+      auto_tag: true
+      ignore_missing: true
+      target: samuelph/universal-statuspage
+      template: samuelph/universal-statuspage:OS-ARCH
+      platforms:
+        - linux/amd64
+        - linux/arm
+      username:
+        from_secret: USERNAME
+      password:
+        from_secret: PASSWORD
+
+depends_on:
+  - linux-amd64
+  - linux-arm
+
+trigger:
+  branch:
+    - master
