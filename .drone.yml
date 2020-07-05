@@ -26,6 +26,8 @@ steps:
 trigger:
   branch:
     - master
+  event:
+    - push
 
 ---
 kind: pipeline
@@ -90,3 +92,5 @@ depends_on:
 trigger:
   branch:
     - master
+  event:
+    - push
