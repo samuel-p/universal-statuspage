@@ -1,7 +1,8 @@
 import {json, Router} from 'express';
 import {CurrentStatus, State} from './app/_data/data';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
-import * as jp from 'jsonpath';
+import {join} from 'path';
+import {JSONPath} from 'jsonpath-plus';
 
 interface Cache {
   [id: string]: State;
@@ -43,7 +44,8 @@ interface StateKey {
 const api = Router();
 api.use(json());
 
-const config = JSON.parse(readFileSync('config.json', {encoding: 'utf-8'})) as Config;
+const serviceStates = existsSync(join(process.cwd(), 'cache.json')) ? JSON.parse(readFileSync(join(process.cwd(), 'cache.json'), {encoding: 'utf-8'})) : {} as Cache;
+const config = JSON.parse(readFileSync(join(process.cwd(), 'config.json'), {encoding: 'utf-8'})) as Config;
 const stateKeys: { [service: string]: StateKey } = config.groups
   .map(g => g.services).reduce((x, y) => x.concat(y), [])
   .reduce((services, service) => {
@@ -56,7 +58,6 @@ const stateKeys: { [service: string]: StateKey } = config.groups
     };
     return services;
   }, {});
-const serviceStates = existsSync('cache.json') ? JSON.parse(readFileSync('cache.json', {encoding: 'utf-8'})) : {} as Cache;
 
 let cache: CurrentStatus;
 updateCache();
@@ -68,7 +69,7 @@ api.post('/update/health', (req, res) => {
   }
   const serviceId = req.query.service as string;
   const keys = stateKeys[serviceId];
-  const state = jp.value(req.body, keys.statePath);
+  const state = JSONPath({path: keys.statePath, json: req.body, wrap: false});
 
   if (keys.stateValues.operational.includes(state)) {
     serviceStates[serviceId] = 'operational';
