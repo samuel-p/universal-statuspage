@@ -12,7 +12,9 @@ interface Config {
   authToken: string;
   title: string;
   description: string;
-  statePath: string;
+  servicesPath?: string;
+  idPath?: string;
+  statePath?: string;
   stateValues: {
     operational: string[];
     maintenance: string[];
@@ -20,25 +22,14 @@ interface Config {
   groups: {
     id: string;
     name: string;
+    url?: string;
     services: {
       id: string;
       name: string;
-      url: string;
+      url?: string;
       statePath?: string;
-      stateValues?: {
-        operational?: string[];
-        maintenance?: string[];
-      };
     }[];
   }[];
-}
-
-interface StateKey {
-  statePath: string;
-  stateValues: {
-    operational: string[];
-    maintenance: string[];
-  };
 }
 
 const api = Router();
@@ -46,16 +37,11 @@ api.use(json());
 
 const serviceStates = existsSync(join(process.cwd(), 'cache.json')) ? JSON.parse(readFileSync(join(process.cwd(), 'cache.json'), {encoding: 'utf-8'})) : {} as Cache;
 const config = JSON.parse(readFileSync(join(process.cwd(), 'config.json'), {encoding: 'utf-8'})) as Config;
-const stateKeys: { [service: string]: StateKey } = config.groups
+const serviceStatePaths: { [service: string]: string } = config.groups
   .map(g => g.services).reduce((x, y) => x.concat(y), [])
+  .filter(s => s.statePath)
   .reduce((services, service) => {
-    services[service.id] = {
-      statePath: service.statePath || config.statePath,
-      stateValues: {
-        operational: service.stateValues ? service.stateValues.operational || config.stateValues.operational : config.stateValues.operational,
-        maintenance: service.stateValues ? service.stateValues.maintenance || config.stateValues.maintenance : config.stateValues.maintenance,
-      }
-    };
+    services[service.id] = service.statePath;
     return services;
   }, {});
 
@@ -68,16 +54,26 @@ api.post('/update/health', (req, res) => {
     return res.status(401).send('invalid token');
   }
   const serviceId = req.query.service as string;
-  const keys = stateKeys[serviceId];
-  const state = JSONPath({path: keys.statePath, json: req.body, wrap: false});
-
-  if (keys.stateValues.operational.includes(state)) {
-    serviceStates[serviceId] = 'operational';
-  } else if (keys.stateValues.maintenance.includes(state)) {
-    serviceStates[serviceId] = 'maintenance';
-  } else {
-    serviceStates[serviceId] = 'outage';
+  let services: { id: string, state: string }[] = [];
+  if (serviceId) {
+    services = [{id: serviceId, state: JSONPath({path: serviceStatePaths[serviceId], json: req.body, wrap: false})}];
+  } else if (config.servicesPath && config.idPath && config.statePath) {
+    services = JSONPath({path: config.servicesPath, json: req.body})
+      .map(s => ({
+          id: JSONPath({path: config.idPath, json: s, wrap: false}),
+          state: JSONPath({path: config.statePath, json: s, wrap: false})
+      }));
   }
+
+  services.forEach(s => {
+    if (config.stateValues.operational.includes(s.state)) {
+      serviceStates[s.id] = 'operational';
+    } else if (config.stateValues.maintenance.includes(s.state)) {
+      serviceStates[s.id] = 'maintenance';
+    } else {
+      serviceStates[s.id] = 'outage';
+    }
+  });
 
   updateCache();
 
@@ -110,6 +106,7 @@ function updateCache(): void {
     return {
       id: group.id,
       name: group.name,
+      url: group.url,
       state: calculateOverallState(services.map(s => s.state)),
       services: services
     };

@@ -13,6 +13,11 @@
 a {
   text-decoration: none;
   outline: none;
+  color: #ffffff;
+
+  &:hover.name, &:hover .name {
+    text-decoration: underline;
+  }
 }
 
 mat-panel-title {
