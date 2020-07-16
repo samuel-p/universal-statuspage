@@ -15,6 +15,8 @@ steps:
   - name: docker
     image: plugins/docker
     settings:
+      purge: true
+      no_cache: true
       auto_tag: true
       auto_tag_suffix: linux-amd64
       repo: samuelph/universal-statuspage
@@ -47,6 +49,8 @@ steps:
   - name: docker
     image: plugins/docker
     settings:
+      purge: true
+      no_cache: true
       auto_tag: true
       auto_tag_suffix: linux-arm
       repo: samuelph/universal-statuspage
