@@ -1,14 +1,15 @@
 <mat-accordion [multi]="true">
   <mat-expansion-panel *ngFor="let group of groups" [expanded]="true">
     <mat-expansion-panel-header>
-      <mat-panel-title><i [class]="stateClasses[group.state]"></i> {{group.name}}</mat-panel-title>
-      <!--      <mat-panel-description>-->
-      <!--        <span class="text-capitalize">{{getGroupState(group.services)}}</span>-->
-      <!--      </mat-panel-description>-->
+      <mat-panel-title>
+        <i [class]="stateClasses[group.state]"></i>
+        <a *ngIf="group.url" class="name" [href]="group.url" target="_blank" (click)="$event.stopPropagation()">{{group.name}}</a>
+        <span *ngIf="!group.url">{{group.name}}</span>
+      </mat-panel-title>
     </mat-expansion-panel-header>
 
     <mat-list>
-      <a *ngFor="let service of group.services; last as last" mat-list-item [href]="service.url" target="_blank">
+      <a *ngFor="let service of group.services; last as last" mat-list-item [href]="service.url || group.url || '#'" target="_blank">
         <div matLine class="d-flex">
           <i [class]="stateClasses[service.state]"></i>
           <span class="text-truncate">{{service.name}}</span>

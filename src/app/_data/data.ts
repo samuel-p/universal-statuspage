@@ -8,6 +8,7 @@ export interface CurrentStatus {
 export interface Group {
   id: string;
   name: string;
+  url?: string;
   state: State;
   services: Service[];
 }
@@ -15,7 +16,7 @@ export interface Group {
 export interface Service {
   id: string;
   name: string;
-  url: string;
+  url?: string;
   state: State;
 }
 
