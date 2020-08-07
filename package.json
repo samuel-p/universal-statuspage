@@ -28,7 +28,7 @@
     "@angular/router": "~10.0.4",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@nguniversal/express-engine": "^10.0.1",
-    "bootstrap": "^4.5.1",
+    "bootstrap": "^4.5.2",
     "express": "^4.17.1",
     "jsonpath-plus": "^4.0.0",
     "roboto-fontface": "^0.10.0",
