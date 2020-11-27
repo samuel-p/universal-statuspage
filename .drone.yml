@@ -36,6 +36,37 @@ name: linux-arm
 
 platform:
   os: linux
+  arch: arm64
+
+steps:
+  - name: build
+    image: node:alpine
+    commands:
+      - npm install
+      - npm run build:ssr
+  - name: docker
+    image: plugins/docker
+    settings:
+      auto_tag: true
+      auto_tag_suffix: linux-arm64
+      repo: samuelph/universal-statuspage
+      username:
+        from_secret: USERNAME
+      password:
+        from_secret: PASSWORD
+    when:
+      branch:
+        - master
+      event:
+        - push
+
+---
+kind: pipeline
+type: docker
+name: linux-arm
+
+platform:
+  os: linux
   arch: arm
 
 steps:
@@ -79,6 +110,7 @@ steps:
       template: samuelph/universal-statuspage:OS-ARCH
       platforms:
         - linux/amd64
+        - linux/arm64
         - linux/arm
       username:
         from_secret: USERNAME
@@ -87,6 +119,7 @@ steps:
 
 depends_on:
   - linux-amd64
+  - linux-arm64
   - linux-arm
 
 trigger:
