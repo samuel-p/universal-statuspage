@@ -32,7 +32,7 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: linux-arm
+name: linux-arm64
 
 platform:
   os: linux
