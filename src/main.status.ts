@@ -1,5 +1,5 @@
 import {json, Router} from 'express';
-import {CurrentStatus, State} from './app/_data/data';
+import {CurrentStatus, Service, State} from './app/_data/data';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
 import {JSONPath} from 'jsonpath-plus';
@@ -83,7 +83,53 @@ api.post('/update/health', (req, res) => {
 });
 
 api.get('/status', (req, res) => {
-  return res.json(cache);
+    return res.json(cache);
+});
+
+api.get('/badge', (req, res) => {
+  const serviceId = req.query.service as string;
+  if (!serviceId) {
+    return res.json({
+      "schemaVersion": 1,
+      "label": "sp-status",
+      "message": "service not provided",
+      "isError": true
+    });
+  }
+  const service = cache.groups
+    .map(g => g.services).reduce((x, y) => x.concat(y), [])
+    .find(s => s.id === serviceId);
+  if (!service) {
+    return res.json({
+      "schemaVersion": 1,
+      "label": "sp-status",
+      "message": "service not found",
+      "isError": true
+    });
+  }
+  const label = req.query.label || service.name;
+  let message;
+  let color;
+  switch (service.state) {
+    case 'operational':
+      message = req.query.operational || service.state;
+      color = '#7ed321';
+      break;
+    case 'outage':
+      message = req.query.outage || service.state;
+      color = '#ff6f6f';
+      break;
+    case 'maintenance':
+      message = req.query.maintenance || service.state;
+      color = '#f7ca18';
+      break;
+  }
+  return res.json({
+    "schemaVersion": 1,
+    "label": label,
+    "message": message,
+    "color": color
+  });
 });
 
 api.get('/info', (req, res) => {
