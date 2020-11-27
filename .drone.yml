@@ -85,11 +85,12 @@ steps:
         from_secret: USERNAME
       password:
         from_secret: PASSWORD
-    when:
-      branch:
-        - master
-      event:
-        - push
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
 
 ---
 kind: pipeline
@@ -98,7 +99,7 @@ name: manifest
 
 platform:
   os: linux
-  arch: arm
+  arch: arm64
 
 steps:
   - name: publish
