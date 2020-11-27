@@ -21,7 +21,7 @@
     "@angular/compiler": "~11.0.2",
     "@angular/core": "~11.0.2",
     "@angular/forms": "~11.0.2",
-    "@angular/material": "^10.0.2",
+    "@angular/material": "^11.0.1",
     "@angular/platform-browser": "~11.0.2",
     "@angular/platform-browser-dynamic": "~11.0.2",
     "@angular/platform-server": "~11.0.2",
