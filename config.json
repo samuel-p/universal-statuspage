@@ -2,12 +2,6 @@
   "authToken": "test",
   "title": "sp-status",
   "description": "Services hosted by sp-codes",
-  "translations": {
-    "de": {
-      "title": "sp-status",
-      "description": "Services von sp-codes bereitgestellt"
-    }
-  },
   "servicesPath": "$.alerts.*",
   "idPath": "$.labels.status_service",
   "statePath": "$.status",
@@ -24,21 +18,6 @@
         {
           "id": "test",
           "name": "My Service",
-          "url": "http://sp-codes.de",
-          "statePath": "$.state"
-        }, {
-          "id": "test3",
-          "name": "Test3",
-          "statePath": "$.state"
-        }
-      ]
-    }, {
-      "id": "group2",
-      "name": "Group2",
-      "services": [
-        {
-          "id": "test2",
-          "name": "Test2",
           "url": "http://sp-codes.de",
           "statePath": "$.state"
         }

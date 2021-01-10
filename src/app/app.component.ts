@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
     this.api.getMetaInfo().subscribe(info => {
       this.title = info.title;
       this.description = info.description;
-      this.translations = info.translations;
+      this.translations = info.translations || {};
       this.htmlTitle.setTitle(this.title);
     });
   }
