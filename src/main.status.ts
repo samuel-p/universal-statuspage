@@ -60,17 +60,15 @@ const serviceStatePaths: { [service: string]: string } = config.groups
   }, {});
 
 let cache: CurrentStatus;
-let uptimeStates = existsSync(join(process.cwd(), 'uptime.json')) ? JSON.parse(readFileSync(join(process.cwd(), 'uptime.json'), {encoding: 'utf-8'})) : null as { [id: string]: UptimeStatus; };
+let uptimeStates = existsSync(join(process.cwd(), 'uptime.json')) ? JSON.parse(readFileSync(join(process.cwd(), 'uptime.json'), {encoding: 'utf-8'})) : {} as { [id: string]: UptimeStatus; };
+// init serviceStates and uptimeStates
 config.groups
   .map(g => g.services).reduce((x, y) => x.concat(y), [])
   .map(s => s.id).filter(id => !serviceStates[id])
   .forEach(id => serviceStates[id] = 'operational');
-if (!uptimeStates) {
-  uptimeStates = {};
-  for (let id in serviceStates) {
-    if (serviceStates.hasOwnProperty(id)) {
-      updateServiceState(id, serviceStates[id]);
-    }
+for (let id in serviceStates) {
+  if (serviceStates.hasOwnProperty(id)) {
+    updateServiceState(id, serviceStates[id]);
   }
 }
 updateCache();
