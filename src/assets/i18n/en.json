@@ -1,0 +1,24 @@
+{
+  "state": {
+    "operational": "Operational",
+    "maintenance": "Maintenance",
+    "outage": "Outage"
+  },
+  "uptime": {
+    "title": "Uptime",
+    "last24hours": "Last 24 hours",
+    "last7days": "Last 7 days",
+    "last30days": "Last 30 days",
+    "last90days": "Last 90 days"
+  },
+  "recent-events": {
+    "title": "Recent events",
+    "operational": "Operational again",
+    "maintenance": "Maintenance for {{time}}",
+    "outage": "Outage for {{time}}"
+  },
+  "last-updated": "Last updated {{time}}",
+  "loading": "Loading...",
+  "show-all": "Show all",
+  "show-less": "Show less"
+}

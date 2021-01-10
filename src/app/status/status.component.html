@@ -1,25 +1,38 @@
-<mat-accordion [multi]="true">
-  <mat-expansion-panel *ngFor="let group of groups" [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <i [class]="stateClasses[group.state]"></i>
-        <a *ngIf="group.url" class="name" [href]="group.url" target="_blank" (click)="$event.stopPropagation()">{{group.name}}</a>
-        <span *ngIf="!group.url">{{group.name}}</span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
+<div class="py-3" *ngFor="let group of groups">
+  <h2>
+    <i [class]="stateClasses[group.state]"></i>
+    <a *ngIf="group.url" [href]="group.url" target="_blank"
+       (click)="$event.stopPropagation()">{{group.name}}</a>
+    <span *ngIf="!group.url">{{group.name}}</span>
+  </h2>
+  <mat-accordion [multi]="true">
+    <mat-expansion-panel *ngFor="let service of group.services" [hideToggle]="true"
+                         [(expanded)]="expandedCache[group.id + '-' + service.id]"
+                         (afterExpand)="saveExpandedCache()" (afterCollapse)="saveExpandedCache()">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div matLine class="w-100 d-flex">
+            <i [class]="stateClasses[service.state]"></i>
+            <a *ngIf="service.url" class="text-truncate" [href]="service.url" target="_blank"
+               (click)="$event.stopPropagation()">{{service.name}}</a>
+            <span *ngIf="!service.url" class="text-truncate">{{service.name}}</span>
+            <span class="ml-2 font-weight-normal d-none d-sm-block" [class.operational]="service.uptime >= 99"
+                  [class.maintenance]="service.uptime < 99 && service.uptime >= 95"
+                  [class.outage]="service.uptime < 95">{{service.uptime?.toFixed(2)}}%</span>
+            <span class="flex-grow-1"></span>
+            <span class="{{service.state}}">{{'state.' + service.state | translate}}</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
 
-    <mat-list>
-      <a *ngFor="let service of group.services; last as last" mat-list-item [href]="service.url || group.url || '#'" target="_blank">
-        <div matLine class="d-flex">
-          <i [class]="stateClasses[service.state]"></i>
-          <span class="text-truncate">{{service.name}}</span>
-          <span class="flex-grow-1"></span>
-          <span class="text-capitalize {{service.state}}">{{service.state}}</span>
-        </div>
-        <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
-      </a>
-    </mat-list>
-  </mat-expansion-panel>
-</mat-accordion>
+      <ng-template matExpansionPanelContent>
+        <app-uptime [id]="service.id"></app-uptime>
+      </ng-template>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
 
-<div class="text-right mt-3"><small>Last updated {{lastUpdated | date:'HH:mm:ss'}}</small></div>
+<div class="text-right pb-3"><small matTooltip="{{lastUpdated | dayjs:'format':'LTS'}}" matTooltipPosition="above"
+                                    [matTooltipShowDelay]="0"
+                                    [matTooltipHideDelay]="0">{{'last-updated' | translate:{'time': lastUpdated | dayjs:'from'} }}</small>
+</div>

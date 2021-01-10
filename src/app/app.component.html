@@ -1,7 +1,22 @@
 <div class="box">
   <header class="container pt-4">
-    <h1 *ngIf="title && title.length">{{title}}</h1>
-    <h3 *ngIf="description && description.length">{{description}}</h3>
+    <div class="d-flex">
+      <div *ngIf="title && title.length">
+        <h1>{{translations[getLanguage()]?.title || title}}</h1>
+      </div>
+      <div class="flex-grow-1"></div>
+      <div class="language-selection">
+        <a href="#" class="mr-2" (click)="setLanguage('en'); $event.preventDefault();">
+          <span class="flag-icon flag-icon-us"></span>
+        </a>
+        <a href="#" (click)="setLanguage('de'); $event.preventDefault();">
+          <span class="flag-icon flag-icon-de"></span>
+        </a>
+      </div>
+    </div>
+    <div *ngIf="description && description.length">
+      <h3>{{translations[getLanguage()]?.description || description}}</h3>
+    </div>
   </header>
 
   <main class="container">

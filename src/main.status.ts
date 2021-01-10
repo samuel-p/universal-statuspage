@@ -1,8 +1,16 @@
 import {json, Router} from 'express';
-import {CurrentStatus, Service, State} from './app/_data/data';
+import {CurrentStatus, State, UptimeStatus} from './app/_data/data';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
 import {JSONPath} from 'jsonpath-plus';
+import * as dayjs from 'dayjs';
+import {Dayjs} from 'dayjs';
+import * as utc from 'dayjs/plugin/utc';
+import * as isBetween from 'dayjs/plugin/isBetween';
+import {CronJob} from 'cron';
+
+dayjs.extend(utc);
+dayjs.extend(isBetween);
 
 interface Cache {
   [id: string]: State;
@@ -12,6 +20,12 @@ interface Config {
   authToken: string;
   title: string;
   description: string;
+  translations?: {
+    [lang: string]: {
+      title: string;
+      description: string;
+    }
+  },
   servicesPath?: string;
   idPath?: string;
   statePath?: string;
@@ -46,6 +60,7 @@ const serviceStatePaths: { [service: string]: string } = config.groups
   }, {});
 
 let cache: CurrentStatus;
+let uptimeStates = existsSync(join(process.cwd(), 'uptime.json')) ? JSON.parse(readFileSync(join(process.cwd(), 'uptime.json'), {encoding: 'utf-8'})) : {} as { [id: string]: UptimeStatus; };
 updateCache();
 
 api.post('/update/health', (req, res) => {
@@ -60,40 +75,48 @@ api.post('/update/health', (req, res) => {
   } else if (config.servicesPath && config.idPath && config.statePath) {
     services = JSONPath({path: config.servicesPath, json: req.body})
       .map(s => ({
-          id: JSONPath({path: config.idPath, json: s, wrap: false}),
-          state: JSONPath({path: config.statePath, json: s, wrap: false})
+        id: JSONPath({path: config.idPath, json: s, wrap: false}),
+        state: JSONPath({path: config.statePath, json: s, wrap: false})
       }));
   }
 
   services.forEach(s => {
     if (config.stateValues.operational.includes(s.state)) {
-      serviceStates[s.id] = 'operational';
+      updateServiceState(s.id, 'operational');
     } else if (config.stateValues.maintenance.includes(s.state)) {
-      serviceStates[s.id] = 'maintenance';
+      updateServiceState(s.id, 'maintenance');
     } else {
-      serviceStates[s.id] = 'outage';
+      updateServiceState(s.id, 'outage');
     }
   });
 
   updateCache();
-
-  writeFileSync('cache.json', JSON.stringify(serviceStates), {encoding: 'utf-8'});
+  persistCache();
 
   return res.send('OK');
 });
 
 api.get('/status', (req, res) => {
-    return res.json(cache);
+  return res.json(cache);
+});
+
+api.get('/uptime', (req, res) => {
+  const serviceId = req.query.service as string;
+  const uptime = uptimeStates[serviceId];
+  if (uptime) {
+    return res.json(uptime);
+  }
+  return res.sendStatus(404);
 });
 
 api.get('/badge', (req, res) => {
   const serviceId = req.query.service as string;
   if (!serviceId) {
     return res.json({
-      "schemaVersion": 1,
-      "label": "sp-status",
-      "message": "service not provided",
-      "isError": true
+      'schemaVersion': 1,
+      'label': 'sp-status',
+      'message': 'service not provided',
+      'isError': true
     });
   }
   const service = cache.groups
@@ -101,10 +124,10 @@ api.get('/badge', (req, res) => {
     .find(s => s.id === serviceId);
   if (!service) {
     return res.json({
-      "schemaVersion": 1,
-      "label": "sp-status",
-      "message": "service not found",
-      "isError": true
+      'schemaVersion': 1,
+      'label': 'sp-status',
+      'message': 'service not found',
+      'isError': true
     });
   }
   const label = req.query.label || service.name;
@@ -125,28 +148,51 @@ api.get('/badge', (req, res) => {
       break;
   }
   return res.json({
-    "schemaVersion": 1,
-    "label": label,
-    "message": message,
-    "color": color
+    'schemaVersion': 1,
+    'label': label,
+    'message': message,
+    'color': color
   });
 });
 
 api.get('/info', (req, res) => {
   return res.json({
     title: config.title,
-    description: config.description
+    description: config.description,
+    translations: config.translations
   });
 });
 
+function updateServiceState(id: string, state: string) {
+  if (serviceStates[id] === state) {
+    return;
+  }
+  serviceStates[id] = state;
+  if (!uptimeStates[id]) {
+    uptimeStates[id] = {
+      days: [],
+      events: []
+    };
+  }
+  if (uptimeStates[id].events.length === 0 && state !== 'operational' ||
+    uptimeStates[id].events.length > 0 && uptimeStates[id].events[0].state !== state) {
+    uptimeStates[id].events.unshift({state: state, date: new Date()});
+    console.log(`${id} changed to ${state}`);
+  }
+}
+
 function updateCache(): void {
+  updateUptime();
+
   const groups = config.groups.map(group => {
     const services = group.services.map(service => {
+      const uptime = uptimeStates[service.id];
       return {
         id: service.id,
         name: service.name,
         url: service.url,
-        state: serviceStates[service.id] || 'operational'
+        state: serviceStates[service.id] || 'operational',
+        uptime: uptime ? uptime.days30 : 100
       };
     });
     return {
@@ -163,8 +209,151 @@ function updateCache(): void {
   };
 }
 
+function updateUptime() {
+  const now = dayjs.utc();
+  const today = now.startOf('d');
+  const eventLimit = now.subtract(7, 'd');
+  for (const id in uptimeStates) {
+    if (uptimeStates.hasOwnProperty(id)) {
+      const uptime = uptimeStates[id] as UptimeStatus;
+      if (uptime.days.length < 90) {
+        for (let i = 0; i < 90; i++) {
+          uptime.days.push({date: today.subtract(90 - i, 'd').toDate(), uptime: 100})
+        }
+      }
+      if (today.diff(dayjs.utc(uptime.days[uptime.days.length - 1].date), 'd') >= 1) {
+        uptime.days.push({date: today.toDate(), uptime: 0});
+      }
+      if (uptime.days.length > 90) {
+        uptime.days.splice(0, uptime.days.length - 90);
+      }
+      for (let i = uptime.days.length - 3; i < uptime.days.length; i++) {
+        const start = dayjs.utc(uptime.days[i].date);
+        let end = start.add(1, 'd');
+        if (end.isAfter(now)) {
+          end = now;
+        }
+        uptime.days[i].uptime = calculateUptime(start, end, uptime.events);
+      }
+      uptime.hours24 = calculateUptime(now.subtract(24, 'h'), now, uptime.events);
+      uptime.days7 = uptime.days.slice(uptime.days.length - 7, uptime.days.length).map(e => e.uptime).reduce((a, b) => a + b) / 7;
+      uptime.days30 = uptime.days.slice(uptime.days.length - 30, uptime.days.length).map(e => e.uptime).reduce((a, b) => a + b) / 30;
+      uptime.days90 = uptime.days.slice(uptime.days.length - 90, uptime.days.length).map(e => e.uptime).reduce((a, b) => a + b) / 90;
+      uptime.events = uptime.events.filter(e => dayjs.utc(e.date).isAfter(eventLimit));
+      if (uptime.events.length > 0 && uptime.events[uptime.events.length - 1].state === 'operational') {
+        uptime.events.pop();
+      }
+    }
+  }
+}
+
+function calculateUptime(start: Dayjs, end: Dayjs, events: { state: State; date: Date; }[]): number {
+  if (events.filter(event => dayjs.utc(event.date).isBetween(start, end)).length == 0) {
+    const lastEvent = events.filter(event => dayjs.utc(event.date).isBefore(start))[0];
+    if (lastEvent && lastEvent.state !== 'operational') {
+      return 0;
+    }
+    return 100;
+  }
+  let uptimeMillis = 0;
+  let newestEventDate;
+  for (let i = events.length - 1; i >= 0; i--) {
+    const event = events[i];
+    const eventDate = dayjs.utc(event.date);
+    const lastEvent = events[i + 1];
+    let lastEventDate = lastEvent ? dayjs.utc(lastEvent.date) : start;
+    if (lastEventDate.isBefore(start)) {
+      lastEventDate = start;
+    }
+    if (eventDate.isBetween(start, end)) {
+      if (event.state === 'operational') {
+        newestEventDate = eventDate;
+      } else if (!lastEvent || lastEvent.state === 'operational') {
+        newestEventDate = null;
+        uptimeMillis += eventDate.diff(lastEventDate, 'ms');
+      }
+    }
+  }
+  if (newestEventDate) {
+    uptimeMillis += end.diff(newestEventDate, 'ms');
+  }
+  return uptimeMillis / end.diff(start, 'ms') * 100;
+}
+
 function calculateOverallState(states: State[]): State {
   return states.includes('outage') ? 'outage' : states.includes('maintenance') ? 'maintenance' : 'operational';
 }
+
+function persistCache() {
+  writeFileSync('cache.json', JSON.stringify(serviceStates), {encoding: 'utf-8'});
+  writeFileSync('uptime.json', JSON.stringify(uptimeStates), {encoding: 'utf-8'});
+}
+
+new CronJob('0 * * * * *', () => updateCache(), null, true, 'UTC').start();
+new CronJob('0 0 * * * *', () => persistCache(), null, true, 'UTC').start();
+
+
+api.get('/test', (req, res) => {
+  return res.json({
+    '50_5': calculateUptime(dayjs.utc('2020-01-02'), dayjs.utc('2020-01-03'), [{
+      state: 'outage',
+      date: new Date('2020-01-03T12:00:00.000Z')
+    }, {
+      state: 'operational',
+      date: new Date('2020-01-02T18:00:00.000Z')
+    }, {
+      state: 'outage',
+      date: new Date('2020-01-02T06:00:00.000Z')
+    }, {
+      state: 'operational',
+      date: new Date('2020-01-01T12:00:00.000Z')
+    }]),
+    '50_4': calculateUptime(dayjs.utc('2020-01-02'), dayjs.utc('2020-01-03'), [{
+      state: 'operational',
+      date: new Date('2020-01-02T18:00:00.000Z')
+    }, {
+      state: 'outage',
+      date: new Date('2020-01-02T06:00:00.000Z')
+    }, {
+      state: 'operational',
+      date: new Date('2020-01-01T12:00:00.000Z')
+    }]),
+    '50_3': calculateUptime(dayjs.utc('2020-01-02'), dayjs.utc('2020-01-03'), [{
+      state: 'outage',
+      date: new Date('2020-01-02T12:00:00.000Z')
+    }, {
+      state: 'operational',
+      date: new Date('2020-01-01T12:00:00.000Z')
+    }]),
+    '50_2': calculateUptime(dayjs.utc('2020-01-02'), dayjs.utc('2020-01-03'), [{
+      state: 'outage',
+      date: new Date('2020-01-02T18:00:00.000Z')
+    }, {
+      state: 'operational',
+      date: new Date('2020-01-02T06:00:00.000Z')
+    }]),
+    '50_1': calculateUptime(dayjs.utc('2020-01-02'), dayjs.utc('2020-01-03'), [{
+      state: 'operational',
+      date: new Date('2020-01-02T12:00:00.000Z')
+    }, {
+      state: 'outage',
+      date: new Date('2020-01-01T12:00:00.000Z')
+    }]),
+    '50_0': calculateUptime(dayjs.utc('2020-01-01'), dayjs.utc('2020-01-02'), [{
+      state: 'operational',
+      date: new Date('2020-01-01T12:00:00.000Z')
+    }]),
+    '75': calculateUptime(dayjs.utc('2020-01-01'), dayjs.utc('2020-01-02'), [{
+      state: 'operational',
+      date: new Date('2020-01-01T06:00:00.000Z')
+    }]),
+    '100': calculateUptime(dayjs.utc('2020-01-01'), dayjs.utc('2020-01-02'), []),
+    '0': calculateUptime(dayjs.utc('2020-01-02'), dayjs.utc('2020-01-03'), [{
+      state: 'outage',
+      date: new Date('2020-01-01T12:00:00.000Z')
+    }]),
+    'test': calculateUptime(dayjs.utc('2020-01-07'), dayjs.utc(), [{state: 'outage', date: new Date('2021-01-07T13:54:32.705Z')}])
+  });
+});
 
 export {api};

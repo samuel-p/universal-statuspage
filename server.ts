@@ -1,6 +1,6 @@
 import 'zone.js/dist/zone-node';
 
-import {ngExpressEngine} from '@nguniversal/express-engine';
+import {ngExpressEngine, RenderOptions} from '@nguniversal/express-engine';
 import * as express from 'express';
 import {join} from 'path';
 
@@ -17,14 +17,26 @@ export function app() {
   const indexHtml = existsSync(join(distFolder, 'index.original.html')) ? 'index.original.html' : 'index';
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
-  server.engine('html', ngExpressEngine({
-    bootstrap: AppServerModule,
-  }));
+  // server.engine('html', ngExpressEngine({
+  //   bootstrap: AppServerModule,
+  // }));
+  server.engine('html', (path: string, options: Readonly<RenderOptions>, callback) => {
+    const engine = ngExpressEngine({
+      bootstrap: AppServerModule,
+      providers: [
+        {provide: 'REQUEST', useFactory: () => options.req, deps: []}
+      ]
+    });
+    engine(path, options, callback);
+  });
 
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
   server.use('/api', api);
+  server.get('/favicon.ico', (req, res) => {
+    return res.sendStatus(404);
+  });
 
   // Serve static files from /browser
   server.get('*.*', express.static(distFolder, {

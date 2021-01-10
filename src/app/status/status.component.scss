@@ -1,23 +1,5 @@
-.operational {
-  color: #7ed321;
-}
-
-.outage {
-  color: #ff6f6f;
-}
-
-.maintenance {
-  color: #f7ca18;
-}
-
 a {
-  text-decoration: none;
-  outline: none;
   color: #ffffff;
-
-  &:hover.name, &:hover .name {
-    text-decoration: underline;
-  }
 }
 
 mat-panel-title {
