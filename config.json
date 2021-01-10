@@ -26,21 +26,6 @@
           "name": "My Service",
           "url": "http://sp-codes.de",
           "statePath": "$.state"
-        }, {
-          "id": "test3",
-          "name": "Test3",
-          "statePath": "$.state"
-        }
-      ]
-    }, {
-      "id": "group2",
-      "name": "Group2",
-      "services": [
-        {
-          "id": "test2",
-          "name": "Test2",
-          "url": "http://sp-codes.de",
-          "statePath": "$.state"
         }
       ]
     }
