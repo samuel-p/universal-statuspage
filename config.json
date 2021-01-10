@@ -2,6 +2,12 @@
   "authToken": "test",
   "title": "sp-status",
   "description": "Services hosted by sp-codes",
+  "translations": {
+    "de": {
+      "title": "sp-status",
+      "description": "Services von sp-codes bereitgestellt"
+    }
+  },
   "servicesPath": "$.alerts.*",
   "idPath": "$.labels.status_service",
   "statePath": "$.status",
