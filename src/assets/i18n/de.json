@@ -1,0 +1,24 @@
+{
+  "state": {
+    "operational": "Funktionsfähig",
+    "maintenance": "Wartung",
+    "outage": "Ausfall"
+  },
+  "uptime": {
+    "title": "Verfügbarkeit",
+    "last24hours": "Letzte 24 Stunden",
+    "last7days": "Letzte 7 Tage",
+    "last30days": "Letzte 30 Tage",
+    "last90days": "Letzte 90 Tage"
+  },
+  "recent-events": {
+    "title": "Letzte Ereignisse",
+    "operational": "Wieder funktionsfähig",
+    "maintenance": "Wartung für {{time}}",
+    "outage": "Ausfall für {{time}}"
+  },
+  "last-updated": "Aktualisiert {{time}}",
+  "loading": "Lade...",
+  "show-all": "Alle anzeigen",
+  "show-less": "Weniger anzeigen"
+}

@@ -19,12 +19,6 @@ footer {
   flex-shrink: 0;
 }
 
-a {
-  color: #cccccc;
-  text-decoration: none;
-
-  &:hover {
-    color: #ffffff;
-    text-decoration: underline;
-  }
+.language-selection {
+  font-size: 1.3em;
 }

@@ -1,11 +1,10 @@
 import {Component, Inject, OnDestroy, OnInit, PLATFORM_ID} from '@angular/core';
-import {ApiService} from "../_service/api.service";
-import {Group} from "../_data/data";
-import {interval, Subject} from "rxjs";
-import {flatMap, startWith, takeUntil} from "rxjs/operators";
-import {DOCUMENT, isPlatformBrowser} from "@angular/common";
-
-// import {DOCUMENT} from "@angular/common";
+import {ApiService} from '../_service/api.service';
+import {Group} from '../_data/data';
+import {interval, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {DOCUMENT, isPlatformBrowser} from '@angular/common';
+import {StorageService} from '../_service/storage.service';
 
 @Component({
   selector: 'app-status',
@@ -14,17 +13,24 @@ import {DOCUMENT, isPlatformBrowser} from "@angular/common";
 })
 export class StatusComponent implements OnInit, OnDestroy {
   readonly stateClasses = {
-    "operational": 'fas fa-fw fa-heart operational mr-2',
-    "outage": 'fas fa-fw fa-heart-broken outage mr-2',
-    "maintenance": 'fas fa-fw fa-heartbeat maintenance mr-2'
+    'operational': 'fas fa-fw fa-heart operational mr-2',
+    'outage': 'fas fa-fw fa-heart-broken outage mr-2',
+    'maintenance': 'fas fa-fw fa-heartbeat maintenance mr-2'
   };
 
   destroyed$ = new Subject();
   groups: Group[];
   lastUpdated: Date;
+  expandedCache: { [id: string]: boolean };
 
-  constructor(private api: ApiService, @Inject(PLATFORM_ID) private platformId: Object,
+  constructor(private api: ApiService, private storage: StorageService,
+              @Inject(PLATFORM_ID) private platformId: Object,
               @Inject(DOCUMENT) private document: Document) {
+    let cache = this.storage.getValue('expanded');
+    if (typeof cache !== 'object') {
+      cache = null;
+    }
+    this.expandedCache = cache || {};
   }
 
   ngOnInit(): void {
@@ -48,5 +54,9 @@ export class StatusComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
+  }
+
+  saveExpandedCache() {
+    this.storage.setValue('expanded', this.expandedCache);
   }
 }
