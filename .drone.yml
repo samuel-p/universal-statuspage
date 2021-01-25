@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build
-    image: node:alpine
+    image: node:slim
     commands:
       - npm install
       - npm run build:ssr
@@ -22,12 +22,11 @@ steps:
         from_secret: USERNAME
       password:
         from_secret: PASSWORD
-
-trigger:
-  branch:
-    - master
-  event:
-    - push
+      when:
+        branch:
+          - master
+        event:
+          - push
 
 ---
 kind: pipeline
@@ -54,11 +53,12 @@ steps:
         from_secret: USERNAME
       password:
         from_secret: PASSWORD
-    when:
-      branch:
-        - master
-      event:
-        - push
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
 
 ---
 kind: pipeline
