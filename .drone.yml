@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build
-    image: node:alpine
+    image: node:12.20.1-buster@sha256:ce4f3c9c90400203824d1029f068fd826e2ec64226f2109eb0745681550e5972
     commands:
       - npm install
       - npm run build:ssr
@@ -22,12 +22,11 @@ steps:
         from_secret: USERNAME
       password:
         from_secret: PASSWORD
-
-trigger:
-  branch:
-    - master
-  event:
-    - push
+    when:
+      branch:
+        - main
+      event:
+        - push
 
 ---
 kind: pipeline
@@ -40,7 +39,7 @@ platform:
 
 steps:
   - name: build
-    image: node:alpine
+    image: node:12.20.1-buster@sha256:4f006d33bdf44b35d18a867043738510f60526697c7d4118ea38b334f86ae0eb
     commands:
       - npm install
       - npm run build:ssr
@@ -54,11 +53,12 @@ steps:
         from_secret: USERNAME
       password:
         from_secret: PASSWORD
-    when:
-      branch:
-        - master
-      event:
-        - push
+
+trigger:
+  branch:
+    - main
+  event:
+    - push
 
 ---
 kind: pipeline
@@ -71,7 +71,7 @@ platform:
 
 steps:
   - name: build
-    image: node:alpine
+    image: node:12.20.1-buster@sha256:37d6f1cfdef57f170dce16d72ed21c5d463bed4a6ed340c056ef91cb94e39199
     commands:
       - npm install
       - npm run build:ssr
@@ -88,7 +88,7 @@ steps:
 
 trigger:
   branch:
-    - master
+    - main
   event:
     - push
 
@@ -125,6 +125,6 @@ depends_on:
 
 trigger:
   branch:
-    - master
+    - main
   event:
     - push

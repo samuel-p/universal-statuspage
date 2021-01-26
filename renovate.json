@@ -6,6 +6,20 @@
     "develop"
   ],
   "rangeStrategy": "bump",
+  "rebaseWhen": "behind-base-branch",
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "^Dockerfile$"
+      ],
+      "matchStrings": [
+        "\\s+(?<depName>[a-z0-9\\-]+?)=\"(?<currentValue>.*?)\""
+      ],
+      "lookupNameTemplate": "alpine_3_12/{{{depName}}}",
+      "versioningTemplate": "loose",
+      "datasourceTemplate": "repology"
+    }
+  ],
   "packageRules": [
     {
       "managers": [
@@ -30,6 +44,22 @@
         "^jasmine"
       ],
       "enabled": false
+    },
+    {
+      "datasources": [
+        "repology"
+      ],
+      "groupName": [
+        "base dependencies"
+      ]
+    },
+    {
+      "datasources": [
+        "docker"
+      ],
+      "groupName": [
+        "docker images"
+      ]
     }
   ]
 }
