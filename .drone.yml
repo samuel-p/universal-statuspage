@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build
-    image: amd64/node:12.20.1-buster@sha256:ce4f3c9c90400203824d1029f068fd826e2ec64226f2109eb0745681550e5972
+    image: amd64/node:12.20.1-buster@sha256:3440228a7138f6588fdc75fccf43261bf5ccde0674d037d10795185a85815542
     commands:
       - npm install
       - npm run build:ssr
