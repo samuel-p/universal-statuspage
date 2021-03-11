@@ -37,7 +37,7 @@
     "express": "^4.17.1",
     "flag-icon-css": "^3.5.0",
     "jsonpath-plus": "^5.0.4",
-    "node-cron": "^2.0.3",
+    "node-cron": "^3.0.0",
     "roboto-fontface": "^0.10.0",
     "rxjs": "~6.6.3",
     "tslib": "^2.1.0",
