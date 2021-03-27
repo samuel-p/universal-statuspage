@@ -1,7 +1,7 @@
 ARG ARCH
-FROM amd64/alpine:3.12.3@sha256:074d3636ebda6dd446d0d00304c4454f468237fdacf08fb0eeac90bdbfa1bac7 AS base-amd64
-FROM arm32v7/alpine:3.12.3@sha256:299294be8699c1b323c137f972fd0aa5eaa4b95489c213091dcf46ef39b6c810 AS base-arm
-FROM arm64v8/alpine:3.12.3@sha256:549694ea68340c26d1d85c00039aa11ad835be279bfd475ff4284b705f92c24e AS base-arm64
+FROM amd64/alpine:3.13.3@sha256:4266485e304a825d82c375d3584121b53c802e3540d6b520b212a9f0784d56f5 AS base-amd64
+FROM arm32v7/alpine:3.13.3@sha256:20e384223963ef2fd24ec9341eaad4c796673da0e848387e6fe53ee2ec118d0e AS base-arm
+FROM arm64v8/alpine:3.13.3@sha256:31605c2bc05b020943d5c20a108f4bfe1af47e0a818e94411041805d1374ab42 AS base-arm64
 FROM base-${ARCH}
 
 RUN apk --no-cache add nodejs="12.21.0-r0"
