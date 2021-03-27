@@ -60,46 +60,43 @@ trigger:
   event:
     - push
 
----
-kind: pipeline
-type: docker
-name: linux-arm
-
-platform:
-  os: linux
-  arch: arm
-
-steps:
-  - name: build
-    image: arm32v7/node:12.21.0-buster@sha256:e93d480d761345d85d283fba41585c6906c28d1670fa7f9581ead8aadf56e583
-    commands:
-      - npm install
-      - npm run build:ssr
-  - name: docker
-    image: plugins/docker
-    settings:
-      auto_tag: true
-      auto_tag_suffix: linux-arm
-      repo: samuelph/universal-statuspage
-      username:
-        from_secret: USERNAME
-      password:
-        from_secret: PASSWORD
-
-trigger:
-  branch:
-    - main
-  event:
-    - push
+# disable temporarily
+#---
+#kind: pipeline
+#type: docker
+#name: linux-arm
+#
+#platform:
+#  os: linux
+#  arch: arm
+#
+#steps:
+#  - name: build
+#    image: arm32v7/node:12.21.0-buster@sha256:e93d480d761345d85d283fba41585c6906c28d1670fa7f9581ead8aadf56e583
+#    commands:
+#      - npm install
+#      - npm run build:ssr
+#  - name: docker
+#    image: plugins/docker
+#    settings:
+#      auto_tag: true
+#      auto_tag_suffix: linux-arm
+#      repo: samuelph/universal-statuspage
+#      username:
+#        from_secret: USERNAME
+#      password:
+#        from_secret: PASSWORD
+#
+#trigger:
+#  branch:
+#    - main
+#  event:
+#    - push
 
 ---
 kind: pipeline
 type: docker
 name: manifest
-
-platform:
-  os: linux
-  arch: arm64
 
 steps:
   - name: publish
@@ -112,7 +109,7 @@ steps:
       platforms:
         - linux/amd64
         - linux/arm64
-        - linux/arm
+#        - linux/arm
       username:
         from_secret: USERNAME
       password:
@@ -121,7 +118,7 @@ steps:
 depends_on:
   - linux-amd64
   - linux-arm64
-  - linux-arm
+#  - linux-arm
 
 trigger:
   branch:
