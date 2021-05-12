@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build
-    image: amd64/node:12.22.1-buster@sha256:1e4125d5067c069a665f87b26d36802b50b91eebb80cfae7c93c4e5fe5ce014d
+    image: amd64/node:12.22.1-buster@sha256:436a6432b6f5109c2c70a1f71f5df0e7d29946a967e85882fe08a37f36b8bec4
     commands:
       - npm install
       - npm run build:ssr
@@ -39,7 +39,7 @@ platform:
 
 steps:
   - name: build
-    image: arm64v8/node:12.22.1-buster@sha256:513682c8c99375e256592b827acc1956d7251ad628adf3523efbebeba99d0f34
+    image: arm64v8/node:12.22.1-buster@sha256:a69aea293eec099315b85b665cf71f505a9f2ef9d3c8291a3c859119131bcb3c
     commands:
       - npm install
       - npm run build:ssr
