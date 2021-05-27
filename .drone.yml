@@ -39,7 +39,7 @@ platform:
 
 steps:
   - name: build
-    image: arm64v8/node:12.22.1-buster@sha256:a69aea293eec099315b85b665cf71f505a9f2ef9d3c8291a3c859119131bcb3c
+    image: arm64v8/node:12.22.1-buster@sha256:d34688e5b5157bcf33317618028c5509a35ce954236c13461d1a7a3a51db0578
     commands:
       - npm install
       - npm run build:ssr
