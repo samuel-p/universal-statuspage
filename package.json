@@ -36,7 +36,7 @@
     "dayjs": "^1.10.5",
     "express": "^4.17.1",
     "flag-icon-css": "^3.5.0",
-    "jsonpath-plus": "^5.0.7",
+    "jsonpath-plus": "^5.1.0",
     "node-cron": "^3.0.0",
     "roboto-fontface": "^0.10.0",
     "rxjs": "~6.6.3",
