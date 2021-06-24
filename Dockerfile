@@ -1,10 +1,10 @@
 ARG ARCH
-FROM amd64/alpine:3.12.3@sha256:074d3636ebda6dd446d0d00304c4454f468237fdacf08fb0eeac90bdbfa1bac7 AS base-amd64
-FROM arm32v7/alpine:3.12.3@sha256:299294be8699c1b323c137f972fd0aa5eaa4b95489c213091dcf46ef39b6c810 AS base-arm
-FROM arm64v8/alpine:3.12.3@sha256:549694ea68340c26d1d85c00039aa11ad835be279bfd475ff4284b705f92c24e AS base-arm64
+FROM amd64/alpine:3.14.0@sha256:1775bebec23e1f3ce486989bfc9ff3c4e951690df84aa9f926497d82f2ffca9d AS base-amd64
+FROM arm32v7/alpine:3.14.0@sha256:8d99168167baa6a6a0d7851b9684625df9c1455116a9601835c2127df2aaa2f5 AS base-arm
+FROM arm64v8/alpine:3.14.0@sha256:53b74ddfc6225e3c8cc84d7985d0f34666e4e8b0b6892a9b2ad1f7516bc21b54 AS base-arm64
 FROM base-${ARCH}
 
-RUN apk --no-cache add nodejs="12.21.0-r0"
+RUN apk --no-cache add nodejs="12.22.1-r0"
 
 COPY dist/universal-statuspage /universal-statuspage
 
