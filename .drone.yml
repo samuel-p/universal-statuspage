@@ -18,6 +18,8 @@ steps:
       auto_tag: true
       auto_tag_suffix: linux-amd64
       repo: samuelph/universal-statuspage
+      build_args:
+        - ARCH=amd64
       username:
         from_secret: USERNAME
       password:
@@ -49,6 +51,8 @@ steps:
       auto_tag: true
       auto_tag_suffix: linux-arm64
       repo: samuelph/universal-statuspage
+      build_args:
+        - ARCH=amd64
       username:
         from_secret: USERNAME
       password:
@@ -109,7 +113,7 @@ steps:
       platforms:
         - linux/amd64
         - linux/arm64
-#        - linux/arm
+      #        - linux/arm
       username:
         from_secret: USERNAME
       password:
