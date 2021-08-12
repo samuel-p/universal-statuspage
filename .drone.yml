@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build
-    image: node:lts-buster@sha256:205a1ee45d899e65e584030aee68d6c00357559ece80e1c82c00ac06415843c2
+    image: node:lts-buster@sha256:df92d3b97dde1ebe73f97353c6f5b10a416895580c79176bfb7f80da132aac96
     commands:
       - npm install
       - npm run build:ssr
