@@ -8,7 +8,7 @@ platform:
 
 steps:
   - name: build
-    image: node:lts-buster@sha256:801df90f337b1a2b06de92b11aaa539b7257f4eae600117806e4ad352c407553
+    image: node:lts-buster@sha256:86853bc87b53623ce8c40fcc0e9dcbdaed64fe7143e178db5735ef1902002d68
     commands:
       - npm install
       - npm run build:ssr
@@ -41,7 +41,7 @@ platform:
 
 steps:
   - name: build
-    image: arm64v8/node:lts-buster@sha256:6ff8eb4cb36e8736c7dbb4ca8c29dd07850c941cc328b1a8dbcf271f6a55c015
+    image: arm64v8/node:lts-buster@sha256:6455bdb61d97eba371ab1f61c6fc2a21733dea1fa1e45d332bb44a357301510c
     commands:
       - npm install
       - npm run build:ssr
