@@ -4,7 +4,7 @@ FROM arm32v7/alpine:3.14.2@sha256:e12ff876f0075740ed3d7bdf788107ae84c1b3dd6dc98b
 FROM arm64v8/alpine:3.14.2@sha256:b06a5cf61b2956088722c4f1b9a6f71dfe95f0b1fe285d44195452b8a1627de7 AS base-arm64
 FROM base-${ARCH}
 
-RUN apk --no-cache add nodejs="12.22.4-r0"
+RUN apk --no-cache add nodejs="12.22.6-r0"
 
 COPY dist/universal-statuspage /universal-statuspage
 
