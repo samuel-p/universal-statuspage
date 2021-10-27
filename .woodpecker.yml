@@ -1,0 +1,33 @@
+pipeline:
+  build:
+    image: node:lts-buster@sha256:86853bc87b53623ce8c40fcc0e9dcbdaed64fe7143e178db5735ef1902002d68
+    commands:
+      - npm install
+      - npm run build:ssr
+  docker:
+    image: plugins/docker
+    secrets:
+      - DOCKER_USERNAME
+      - DOCKER_PASSWORD
+    repo: samuelph/universal-statuspage
+    tags: latest
+    when:
+      branch:
+        - main
+      event:
+        - push
+  cr:
+    image: plugins/docker
+    secrets:
+      - source: CR_USERNAME
+        target: DOCKER_USERNAME
+      - source: CR_PASSWORD
+        target: DOCKER_PASSWORD
+    registry: cr.sp-codes.de
+    repo: cr.sp-codes.de/universal-statuspage
+    tags: latest
+    when:
+      branch:
+        - main
+      event:
+        - push
