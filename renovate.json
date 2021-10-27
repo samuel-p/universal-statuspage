@@ -15,7 +15,7 @@
       "matchStrings": [
         "\\s+(?<depName>[a-z0-9\\-]+?)=\"(?<currentValue>.*?)\""
       ],
-      "lookupNameTemplate": "alpine_3_12/{{{depName}}}",
+      "lookupNameTemplate": "alpine_3_14/{{{depName}}}",
       "versioningTemplate": "loose",
       "datasourceTemplate": "repology"
     }
