@@ -5,7 +5,7 @@ pipeline:
       - npm install
       - npm run build:ssr
   docker:
-    image: plugins/docker
+    image: techknowlogick/drone-docker
     secrets:
       - DOCKER_USERNAME
       - DOCKER_PASSWORD
@@ -17,7 +17,7 @@ pipeline:
       event:
         - push
   cr:
-    image: plugins/docker
+    image: techknowlogick/drone-docker
     secrets:
       - source: CR_USERNAME
         target: DOCKER_USERNAME
