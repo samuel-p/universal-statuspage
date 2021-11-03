@@ -79,12 +79,6 @@ api.post('/update/health', (req, res) => {
     return res.status(401).send('invalid token');
   }
   const serviceId = req.query.service as string;
-  if (!config.groups
-    .map(g => g.services).reduce((x, y) => x.concat(y), [])
-    .map(s => s.id).includes(serviceId)) {
-    // TODO remove old caches
-    return res.send('OK');
-  }
   let services: { id: string, state: string }[] = [];
   if (serviceId) {
     services = [{id: serviceId, state: JSONPath({path: serviceStatePaths[serviceId], json: req.body, wrap: false})}];
