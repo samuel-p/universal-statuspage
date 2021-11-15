@@ -31,7 +31,7 @@
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
     "@types/node-cron": "^2.0.5",
-    "bootstrap": "^4.6.0",
+    "bootstrap": "^4.6.1",
     "cron": "^1.8.2",
     "dayjs": "^1.10.7",
     "express": "^4.17.1",
